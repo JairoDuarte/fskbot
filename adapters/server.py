@@ -20,7 +20,7 @@ def handle_verification():
         return "Invalid verification token"
 
 
-@app.route('/', methods=['POST'])
+@app.route('/ttt', methods=['POST'])
 def handle_incoming_messages():
     data = request.json
     sender = ''
