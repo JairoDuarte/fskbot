@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
-
+from speech.speechTotext import speech_to_text
 from fbmessenger import BaseMessenger, elements, MessengerClient, attachments
 from typing import Text, List, Dict, Any, Callable
 
@@ -14,10 +14,12 @@ logger = logging.getLogger(__name__)
 class MessengerInput(BaseMessenger):
     """Implement a fbmessenger to parse incoming webhooks and send msgs."""
 
-    def __init__(self, page_access_token):
+    def __init__(self, page_access_token, message):
         # type: (Text, Callable[[UserMessage], None]) -> None
 
         self.page_access_token = page_access_token
+        self.last_message = message
+
         super(MessengerInput, self).__init__(self.page_access_token)
 
     @staticmethod
@@ -36,20 +38,19 @@ class MessengerInput(BaseMessenger):
                 message['message'].get('text') and
                 not message['message'].get("is_echo"))
 
-    def message(self, message):
+    def message(self):
         # type: (Dict[Text, Any]) -> None
         """Handle an incoming event from the fb webhook."""
 
-        if self._is_user_message(message):
-            text = message['message']['text']
-        elif self._is_audio_message(message):
-            attachment = message['message']['attachments'][0]
+        if self._is_user_message(self.last_message):
+            text = self.last_message['message']['text']
+        elif self._is_audio_message(self.last_message):
+            attachment = self.last_message['message']['attachments'][0]
             text = attachment['payload']['url']
-
+            text = speech_to_text(text)
         else:
             logger.warn("Received a message from facebook that we can not "
-                        "handle. Message: {}".format(message))
-            return
+                        "handle. Message: {}".format(self.message))
 
         return text
 
@@ -104,12 +105,15 @@ class MessengerOutput:
         # this is a bit hacky, but the client doesn't have a proper API to
         # send messages but instead expects the incoming sender to be present
         # which we don't have as it is stored in the input channel.
+        self.messenger_client.send(element.to_dict(),
+                                   {"sender": {"id": recipient_id}},
+                                   'RESPONSE')
         pass
 
     def send_text_message(self, recipient_id, message):
         # type: (Text, Text) -> None
         """Send a message through this channel."""
-
+        print('sed text')
         logger.info("Sending message: " + message)
 
         self.send(recipient_id, elements.Text(text=message))

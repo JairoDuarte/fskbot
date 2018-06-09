@@ -1,6 +1,6 @@
 import requests
 from ffmpy import FFmpeg
-
+import os
 YOUR_AUDIO_FILE = 'http://res.cloudinary.com/angoticket/video/upload/v1524933963/rec_9s.mp3'
 
 """
@@ -15,12 +15,17 @@ def convert_to_audio(file_path):
         ff = FFmpeg(inputs={source: None},
                     outputs={destination: None})
         ff.run()
-
     except Exception:
         print(Exception)
+    return destination
 
 
-def download_audio(url, file_name):
+"""
+permet de telecharger un fichier
+"""
+
+
+def download_file(url, file_name):
     response = requests.get(url, allow_redirects=True)
 
     try:
@@ -31,5 +36,5 @@ def download_audio(url, file_name):
 
 if __name__ == '__main__':
     file = 'rec_9s.mp3'
-    download_audio(YOUR_AUDIO_FILE, file)
+    download_file(YOUR_AUDIO_FILE, file)
     convert_to_audio(file)

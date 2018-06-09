@@ -1,33 +1,42 @@
 import json
 import requests
+from speech.utils import convert_to_audio,download_file
+import os
 
 YOUR_API_KEY = 'fc511417db424bce879829c573bae41b'
 YOUR_AUDIO_FILE = 'http://res.cloudinary.com/angoticket/video/upload/v1524933963/rec_9s.mp3'
-MODE = 'interactive'
+MODE = 'conversation'
 LANG = 'Fr-Fr'
 FORMAT = 'simple'
 
-def handler(url):
+
+def speech_to_text(url):
     # 1. Get an Authorization Token
     token = get_token()
     # 2. Perform Speech Recognition
     results = get_text(token, url)
     # 3. Print Results
     print(results)
+    return results.get('DisplayText')
+
+
+# Retourne un token d'authorization pour l'execution d'une requete POST sur azure  Cognitive Services.
 
 def get_token():
-    # Return an Authorization Token by making a HTTP POST request to Cognitive Services with a valid API key.
     url = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken'
     headers = {
         'Ocp-Apim-Subscription-Key': YOUR_API_KEY
     }
     r = requests.post(url, headers=headers)
     token = r.content
-    return(token)
+    return (token)
+
+
+# Requete qui envois le fichier audio en stream vers  Bing Speech API pour convertir l'audio en text et retourne un json
 
 def get_text(token, audio):
-    # Request that the Bing Speech API convert the audio to text
-    url = 'https://speech.platform.bing.com/speech/recognition/{0}/cognitiveservices/v1?language={1}&format={2}'.format(MODE, LANG, FORMAT)
+    url = 'https://speech.platform.bing.com/speech/recognition/{0}/cognitiveservices/v1?language={1}&format={2}'.format(
+        MODE, LANG, FORMAT)
     headers = {
         'Accept': 'application/json',
         'Ocp-Apim-Subscription-Key': YOUR_API_KEY,
@@ -39,34 +48,23 @@ def get_text(token, audio):
     results = json.loads(r.content)
     return results
 
+
+# Execute le fichier audio en streaming
+
 def stream_audio_file(speech_file, chunk_size=1024):
-    # Chunk audio file
     file_name = speech_file.split('/')[-1]
-    print(file_name)
     file_name = file_name.split('?')[0]
-
-    print(file_name)
-    download_audio(speech_file,file_name)
-
-    with open(file_name, 'rb') as f:
+    download_file(speech_file, file_name)
+    destination = convert_to_audio(file_name)
+    #file_name = 'audioclip-1526667515000-8576.wav'
+    #destination = 'audioclip-1526675322000-9088.wav'
+    print(destination)
+    with open(destination, 'rb') as f:
         while 1:
             data = f.read(1024)
             if not data:
+                os.remove(file_name)
+                os.remove(destination)
                 break
             yield data
 
-
-def download_audio(url,file_name):
-    r = requests.get(url)
-    with open(file_name, 'wb') as f:
-        try:
-            for block in r.iter_content(1024):
-                f.write(block)
-                if not block:
-                    return file_name;
-        except KeyboardInterrupt:
-            pass
-
-
-if __name__ == '__main__':
-    handler()
