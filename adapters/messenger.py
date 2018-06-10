@@ -5,21 +5,20 @@ from __future__ import unicode_literals
 
 import logging
 from speech.speechTotext import speech_to_text
+from speech.speech_to_text import get_text as gcc_get_text
 from fbmessenger import BaseMessenger, elements, MessengerClient, attachments
 from typing import Text, List, Dict, Any, Callable
-
+from speech.texttospeech import get_url
 logger = logging.getLogger(__name__)
 
 
 class MessengerInput(BaseMessenger):
     """Implement a fbmessenger to parse incoming webhooks and send msgs."""
 
-    def __init__(self, page_access_token, message):
+    def __init__(self, page_access_token):
         # type: (Text, Callable[[UserMessage], None]) -> None
 
         self.page_access_token = page_access_token
-        self.last_message = message
-
         super(MessengerInput, self).__init__(self.page_access_token)
 
     @staticmethod
@@ -38,20 +37,35 @@ class MessengerInput(BaseMessenger):
                 message['message'].get('text') and
                 not message['message'].get("is_echo"))
 
-    def message(self):
+    def message(self, msg):
         # type: (Dict[Text, Any]) -> None
         """Handle an incoming event from the fb webhook."""
-
-        if self._is_user_message(self.last_message):
-            text = self.last_message['message']['text']
-        elif self._is_audio_message(self.last_message):
-            attachment = self.last_message['message']['attachments'][0]
+        text = ''
+        if self._is_user_message(msg):
+            text = msg['message']['text']
+            try:
+                if self.last_message['message']['text'] == text:
+                    print('txt')
+                    return ''
+            except Exception as exc:
+                print(exc)
+                pass
+        elif self._is_audio_message(msg):
+            attachment = msg['message']['attachments'][0]
             text = attachment['payload']['url']
-            text = speech_to_text(text)
+            try:
+                if self.last_message['message']['attachments'][0]['payload']['url'] == text:
+                    print('url')
+                    return ''
+            except Exception as exc:
+                print(exc)
+                pass
+            text = gcc_get_text(text)
         else:
             logger.warn("Received a message from facebook that we can not "
                         "handle. Message: {}".format(self.message))
 
+        self.last_message = msg
         return text
 
     def postback(self, message):
@@ -65,9 +79,8 @@ class MessengerInput(BaseMessenger):
         # type: (Text, Text) -> None
         """Pass on the text to the dialogue engine for processing."""
 
-        #out_channel = MessengerBot(self.client)
-        #user_msg = UserMessage(text, out_channel, sender_id)
-
+        # out_channel = MessengerBot(self.client)
+        # user_msg = UserMessage(text, out_channel, sender_id)
 
     def delivery(self, message):
         # type: (Dict[Text, Any]) -> None
@@ -116,6 +129,14 @@ class MessengerOutput:
         print('sed text')
         logger.info("Sending message: " + message)
 
+        self.send(recipient_id, elements.Text(text=message))
+
+    def send_audio_message(self, recipient_id, message):
+        # type: (Text, Text) -> None
+        """Send a message through this channel."""
+        print('sed text')
+        logger.info("Sending message: " + message)
+        url = get_url(message)
         self.send(recipient_id, elements.Text(text=message))
 
     def send_image_url(self, recipient_id, image_url):

@@ -1,9 +1,10 @@
 import json
 import requests
-from speech.utils import convert_to_audio,download_file
+from speech.utils import convert_to_audio, download_file
+from credentials import MS_YOUR_API_KEY
 import os
 
-YOUR_API_KEY = 'fc511417db424bce879829c573bae41b'
+
 YOUR_AUDIO_FILE = 'http://res.cloudinary.com/angoticket/video/upload/v1524933963/rec_9s.mp3'
 MODE = 'conversation'
 LANG = 'Fr-Fr'
@@ -25,7 +26,7 @@ def speech_to_text(url):
 def get_token():
     url = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken'
     headers = {
-        'Ocp-Apim-Subscription-Key': YOUR_API_KEY
+        'Ocp-Apim-Subscription-Key': MS_YOUR_API_KEY
     }
     r = requests.post(url, headers=headers)
     token = r.content
@@ -39,13 +40,17 @@ def get_text(token, audio):
         MODE, LANG, FORMAT)
     headers = {
         'Accept': 'application/json',
-        'Ocp-Apim-Subscription-Key': YOUR_API_KEY,
+        'Ocp-Apim-Subscription-Key': MS_YOUR_API_KEY,
         'Transfer-Encoding': 'chunked',
         'Content-type': 'audio/wav; codec=audio/pcm; samplerate=16000',
         'Authorization': 'Bearer {0}'.format(token)
     }
-    r = requests.post(url, headers=headers, data=stream_audio_file(audio))
-    results = json.loads(r.content)
+    try:
+        r = requests.post(url, headers=headers, data=stream_audio_file(audio))
+        results = json.loads(r.content)
+    except KeyboardInterrupt:
+        pass
+
     return results
 
 
@@ -63,8 +68,5 @@ def stream_audio_file(speech_file, chunk_size=1024):
         while 1:
             data = f.read(1024)
             if not data:
-                os.remove(file_name)
-                os.remove(destination)
                 break
             yield data
-
