@@ -21,6 +21,7 @@ def get_url(message):
     file_name = text_speech(message)
     print(file_name)
     url = upload_audio(file_name)
+    os.remove(file_name)
     return url
 
 
@@ -44,6 +45,3 @@ def text_speech(message):
         out.write(response.audio_content)
     print('Audio content written to file "output.mp3"')
     return destination
-
-
-print(get_url(text))

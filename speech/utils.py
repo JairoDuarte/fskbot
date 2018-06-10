@@ -44,7 +44,7 @@ def download_file(url, file_name):
 
 
 def upload_audio(file_path):
-    response = cloudinary.uploader.upload(file_path, resource_type = "raw") #cloudinary.uploader.upload(file_path)
+    response = cloudinary.uploader.upload(file_path, resource_type = "video")
     return str(response['url'])
 
 

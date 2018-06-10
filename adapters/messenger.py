@@ -4,6 +4,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import logging
+
+from fbmessenger.sender_actions import SenderAction
+
 from speech.speechTotext import speech_to_text
 from speech.speech_to_text import get_text as gcc_get_text
 from fbmessenger import BaseMessenger, elements, MessengerClient, attachments
@@ -134,10 +137,17 @@ class MessengerOutput:
     def send_audio_message(self, recipient_id, message):
         # type: (Text, Text) -> None
         """Send a message through this channel."""
-        print('sed text')
+        print('send text')
         logger.info("Sending message: " + message)
         url = get_url(message)
-        self.send(recipient_id, elements.Text(text=message))
+        audio = attachments.Audio(url=url)
+        self.messenger_client.send(audio.to_dict(), {"sender": {"id": recipient_id}}, 'RESPONSE')
+
+    def send_mark_seen(self,recipient_id):
+        """Send a message through this channel."""
+        print('send mark')
+        mark_seen = SenderAction(sender_action='mark_seen')
+        self.messenger_client.send_action(mark_seen.to_dict(), {"sender": {"id": recipient_id}})
 
     def send_image_url(self, recipient_id, image_url):
         # type: (Text, Text) -> None

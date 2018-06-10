@@ -22,9 +22,14 @@ def handle_messages():
     data = request.json
     message = data['entry'][0]['messaging'][0]
     print(message)
+    outputmessenger.send_mark_seen(message['sender']['id'])
     msg = inputmessenger.message(message)
     print(msg)
-    outputmessenger.send_text_message(inputmessenger.get_user_id(), msg)
+    if msg == '':
+        outputmessenger.send_text_message(inputmessenger.get_user_id(), '')
+    else:
+        outputmessenger.send_audio_message(inputmessenger.get_user_id(), msg)
+
     """
     data = {
         "recipient": {"id": inputmessenger.get_user_id()},
