@@ -9,6 +9,9 @@ app = Flask(__name__)
 inputmessenger = MessengerInput(FB_ACCESS_TOKEN)
 outputmessenger = MessengerOutput(inputmessenger.client)
 
+@app.route('/')
+def hello_world():
+  return 'online'
 
 @app.route('/app/facebook/webhook', methods=['GET'])
 def handle_verification():
