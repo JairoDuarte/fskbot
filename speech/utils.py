@@ -1,6 +1,4 @@
 import requests
-from ffmpy import FFmpeg
-import os
 import time
 import cloudinary
 import cloudinary.uploader
@@ -18,30 +16,18 @@ permet de convertir le fichier audio mp4 en prevenance de messenger en mp3
 
 
 def convert_download_audio(url_file, name):
-    destination = str(name).split('.')[0] + str((lambda: int(round(time.time() * 1000)))())
+    v_name = str(name).split('.')
+    destination = v_name[0] + str((lambda: int(round(time.time() * 1000)))())
     process = api.convert({
-        "inputformat": "mp3",
+        "inputformat": v_name[-1],
         "outputformat": "wav",
         "input": "download",
-        "filename": destination,
+        "filename": destination + v_name[-1],
         "file": url_file
     })
     process.wait()
     process.download()
     return destination + '.wav'
-
-
-def convert_to_audio(file_path):
-    source = file_path
-    destination = str(file_path).split('.')[0] + str((lambda: int(round(time.time() * 1000)))()) + '.wav'
-    try:
-        ff = FFmpeg(inputs={source: None},
-                    outputs={destination: None})
-        ff.run()
-    except Exception:
-        print(Exception)
-    return destination
-
 
 """
 permet de telecharger un fichier
