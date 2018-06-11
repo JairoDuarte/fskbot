@@ -6,8 +6,6 @@ from __future__ import unicode_literals
 import logging
 
 from fbmessenger.sender_actions import SenderAction
-
-from speech.speechTotext import speech_to_text
 from speech.speech_to_text import get_text as gcc_get_text
 from fbmessenger import BaseMessenger, elements, MessengerClient, attachments
 from typing import Text, List, Dict, Any, Callable
