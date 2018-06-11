@@ -2,7 +2,8 @@ import requests
 from fbmessenger import MessengerClient, elements
 from flask import Flask, request
 from credentials import FB_VERIFY_TOKEN, FB_ACCESS_TOKEN
-from adapters.messenger import MessengerInput,MessengerOutput
+from adapters.messenger import MessengerInput, MessengerOutput
+from bot.bot import bot
 
 app = Flask(__name__)
 inputmessenger = MessengerInput(FB_ACCESS_TOKEN)
@@ -24,11 +25,14 @@ def handle_messages():
     print(message)
     outputmessenger.send_mark_seen(message['sender']['id'])
     msg = inputmessenger.message(message)
-    print(msg)
+
     if msg == '':
         outputmessenger.send_text_message(inputmessenger.get_user_id(), '')
     else:
-        outputmessenger.send_audio_message(inputmessenger.get_user_id(), msg)
+        response = bot.get_response(msg)
+        print(msg)
+        print(response)
+        outputmessenger.send_audio_message(inputmessenger.get_user_id(), response)
 
     """
     data = {

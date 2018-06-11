@@ -6,16 +6,30 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from credentials import API_KEY, API_SECRET, CLOUD_NAME
+import cloudconvert
 
-cloudinary.config(
-    cloud_name=CLOUD_NAME,
-    api_key=API_KEY,
-    api_secret=API_SECRET
-)
+api = cloudconvert.Api('qVjwVgld8qIDffvSHsMoO3tYCYtPzX8BS1P4LHRnm047RB5JOWiwVQQ28sQUb7Hq')
+
+cloudinary.config(cloud_name=CLOUD_NAME, api_key=API_KEY, api_secret=API_SECRET)
 
 """
 permet de convertir le fichier audio mp4 en prevenance de messenger en mp3
 """
+
+
+def convert_download_audio(url_file, name):
+    destination = str(name).split('.')[0] + str((lambda: int(round(time.time() * 1000)))())
+    process = api.convert({
+        "inputformat": "mp3",
+        "outputformat": "wav",
+        "input": "download",
+        "filename": destination,
+        "file": url_file
+    })
+    process.wait()
+    process.download()
+    return destination + '.wav'
+
 
 def convert_to_audio(file_path):
     source = file_path
@@ -44,7 +58,7 @@ def download_file(url, file_name):
 
 
 def upload_audio(file_path):
-    response = cloudinary.uploader.upload(file_path, resource_type = "video")
+    response = cloudinary.uploader.upload(file_path, resource_type="video")
     return str(response['url'])
 
 

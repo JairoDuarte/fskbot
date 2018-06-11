@@ -6,7 +6,7 @@ from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
 
-from speech.utils import download_file, convert_to_audio
+from speech.utils import download_file, convert_to_audio, convert_download_audio
 
 YOUR_AUDIO_FILE = 'http://res.cloudinary.com/angoticket/video/upload/v1524933963/rec_9s.mp3'
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jairoduarte/fskMaster-95193100d409.json"
@@ -15,7 +15,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jairoduarte/fskMaster-951
 def get_text(url):
     file_name = url.split('/')[-1]
     file_name = file_name.split('?')[0]
-    download_file(url, file_name)
+    convert_download_audio(url, file_name)
     destination = convert_to_audio(file_name)
     text = speech_to_text(destination)
     os.remove(file_name)
