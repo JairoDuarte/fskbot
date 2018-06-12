@@ -6,12 +6,12 @@ from __future__ import unicode_literals
 import logging
 
 from fbmessenger.sender_actions import SenderAction
-from speech.speech_to_text import get_text as gcc_get_text
+
 from fbmessenger import BaseMessenger, elements, MessengerClient, attachments
 from typing import Text, List, Dict, Any, Callable
 from speech.texttospeech import get_url
 logger = logging.getLogger(__name__)
-
+from speech.speech_to_text import get_text as gcc_get_text
 
 class MessengerInput(BaseMessenger):
     """Implement a fbmessenger to parse incoming webhooks and send msgs."""

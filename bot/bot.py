@@ -28,10 +28,10 @@ bot = ChatBot(
 )
 bot.set_trainer(ChatterBotCorpusTrainer)
 # First, lets train our bot with some data
-bot.train('chatterbot.corpus.french.conversations')
+#bot.train('chatterbot.corpus.french.conversations')
 bot.train('chatterbot.corpus.french.greetings')
 bot.train('chatterbot.corpus.french.trivia')
-bot.train('chatterbot.corpus.french.faqiam')
+#bot.train('chatterbot.corpus.french.faqiam')
 #bot.train('chatterbot.corpus.french.faqinwi')
 
 # Print an example of getting one math based response
