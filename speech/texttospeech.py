@@ -6,7 +6,7 @@ import os, time
 
 from speech.utils import upload_audio
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jairoduarte/fskMaster-95193100d409.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "fskMaster-95193100d409.json"
 client = texttospeech.TextToSpeechClient()
 
 text = 'Passionné de BD comme les aventures d\'Astérix, de romans, polars ou de Sciences-Humaines ? ' \
@@ -38,7 +38,7 @@ def text_speech(message):
         audio_encoding=texttospeech.enums.AudioEncoding.MP3)
 
     response = client.synthesize_speech(input_text, voice, audio_config)
-    destination = '../output' + str((lambda: int(round(time.time() * 1000)))()) + '.mp3'
+    destination = './output' + str((lambda: int(round(time.time() * 1000)))()) + '.mp3'
 
     # The response's audio_content is binary.
     with open(destination, 'wb') as out:

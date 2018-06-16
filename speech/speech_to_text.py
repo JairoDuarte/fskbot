@@ -9,7 +9,7 @@ from google.cloud.speech import types
 from speech.utils import download_file, convert_download_audio
 
 YOUR_AUDIO_FILE = 'http://res.cloudinary.com/angoticket/video/upload/v1524933963/rec_9s.mp3'
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/jairoduarte/fskMaster-95193100d409.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "fskMaster-95193100d409.json"
 
 
 def get_text(url):

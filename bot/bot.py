@@ -24,7 +24,7 @@ bot = ChatBot(
         }
     ],
     output_adapter="chatterbot.output.OutputAdapter",
-    database="../database.db"
+    database="./database.db"
 )
 bot.set_trainer(ChatterBotCorpusTrainer)
 # First, lets train our bot with some data

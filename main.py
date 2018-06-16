@@ -1,9 +1,8 @@
-import requests
-from fbmessenger import MessengerClient, elements
 from flask import Flask, request
-from credentials import FB_VERIFY_TOKEN, FB_ACCESS_TOKEN
+import os
 from adapters.messenger import MessengerInput, MessengerOutput
 from bot.bot import bot
+from credentials import FB_ACCESS_TOKEN, FB_VERIFY_TOKEN
 
 app = Flask(__name__)
 inputmessenger = MessengerInput(FB_ACCESS_TOKEN)
@@ -11,7 +10,7 @@ outputmessenger = MessengerOutput(inputmessenger.client)
 
 @app.route('/')
 def hello_world():
-  return 'online'
+  return 'Chatbot online'
 
 @app.route('/app/facebook/webhook', methods=['GET'])
 def handle_verification():
@@ -35,20 +34,13 @@ def handle_messages():
         response = bot.get_response(msg)
         print(msg)
         print(response)
-        outputmessenger.send_audio_message(inputmessenger.get_user_id(), response)
-
-    """
-    data = {
-        "recipient": {"id": inputmessenger.get_user_id()},
-        "message": {"text": msg}
-    }
-    resp = requests.post("https://graph.facebook.com/v2.6/me/messages?access_token=" + ACCESS_TOKEN, json=data)
-    """
+        outputmessenger.send_audio_message(inputmessenger.get_user_id(), str(response))
 
     return "success"
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
 else:
     app.run(debug=True)
