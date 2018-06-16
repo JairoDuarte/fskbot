@@ -18,13 +18,15 @@ permet de convertir le fichier audio mp4 en prevenance de messenger en mp3
 def convert_download_audio(url_file, name):
     v_name = str(name).split('.')
     destination = v_name[0] + str((lambda: int(round(time.time() * 1000)))())
+    print(v_name[-1])
     process = api.convert({
         "inputformat": v_name[-1],
         "outputformat": "wav",
         "input": "download",
-        "filename": destination + v_name[-1],
+        "filename": destination+'.'+v_name[-1],
         "file": url_file
     })
+    print(destination)
     process.wait()
     process.download()
     return destination + '.wav'
