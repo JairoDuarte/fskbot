@@ -61,6 +61,7 @@ class MessengerInput(BaseMessenger):
             except Exception as exc:
                 print(exc)
                 pass
+            print(text)
             text = gcc_get_text(text)
         else:
             logger.warn("Received a message from facebook that we can not "

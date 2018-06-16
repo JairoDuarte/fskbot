@@ -15,6 +15,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "fskMaster-95193100d409.json"
 def get_text(url):
     file_name = url.split('/')[-1]
     file_name = file_name.split('?')[0]
+    print(url)
     destination = convert_download_audio(url, file_name)
     #destination = convert_to_audio(file_name)
     text = speech_to_text(destination)
