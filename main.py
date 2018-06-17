@@ -1,11 +1,11 @@
 from flask import Flask, request
 import os
 from adapters.messenger import MessengerInput, MessengerOutput
-from bot.bot import bot
-from credentials import FB_ACCESS_TOKEN, FB_VERIFY_TOKEN
+from bot.bot import bot, get_conversation
+import credentials
 
 app = Flask(__name__)
-inputmessenger = MessengerInput(FB_ACCESS_TOKEN)
+inputmessenger = MessengerInput(credentials.FB_ACCESS_TOKEN)
 outputmessenger = MessengerOutput(inputmessenger.client)
 
 @app.route('/')
@@ -14,7 +14,7 @@ def hello_world():
 
 @app.route('/app/facebook/webhook', methods=['GET'])
 def handle_verification():
-    if request.args['hub.verify_token'] == FB_VERIFY_TOKEN:
+    if request.args['hub.verify_token'] == credentials.FB_VERIFY_TOKEN:
         return request.args['hub.challenge']
     else:
         return "Invalid verification token"
@@ -31,7 +31,9 @@ def handle_messages():
     if msg == '':
         outputmessenger.send_text_message(inputmessenger.get_user_id(), '')
     else:
-        response = bot.get_response(msg)
+        conversation = get_conversation(inputmessenger.get_user_id())
+        response = bot.get_response(msg, conversation.id)
+
         print(msg)
         print(response)
         outputmessenger.send_audio_message(inputmessenger.get_user_id(), str(response))
