@@ -136,7 +136,7 @@ class MessengerOutput:
     def send_audio_message(self, recipient_id, message):
         # type: (Text, Text) -> None
         """Send a message through this channel."""
-        print('send text')
+        print('send audio')
         logger.info("Sending message: " + message)
         url = get_url(message)
         audio = attachments.Audio(url=url)
