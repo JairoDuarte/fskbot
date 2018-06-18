@@ -63,13 +63,14 @@ def get_conversation(user_id):
         conversation_ = coll_conversation.find_one({"user_id": user_id})
         print(conversation_)
         conversation.id =  conversation_['conversation_id']
-        print('id '+conversation.id)
+        print(conversation.id)
     except Exception as ex:
         print(ex)
         conversation.id = 0
 
     existing_conversation = False
     try:
+        print('try 2')
         Conversation.objects.get(id=conversation.id)
         print('get conversation')
         existing_conversation = True
