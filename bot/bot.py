@@ -61,9 +61,11 @@ def get_conversation(user_id):
 
     try:
         conversation_ = coll_conversation.find_one({"user_id": user_id})
+        print(conversation_)
         conversation.id =  conversation_['conversation_id']
         print('id '+conversation.id)
-    except Exception:
+    except Exception as ex:
+        print(ex)
         conversation.id = 0
 
     existing_conversation = False
