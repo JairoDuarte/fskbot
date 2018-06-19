@@ -29,11 +29,10 @@ bot = ChatBot(
         {
             'import_path': 'chatterbot.logic.LowConfidenceAdapter',
             'threshold': 0.65,
-            'default_response': "Je suis désolé, mais je n'ai pas compris."
+            'default_response': "Je suis désolé, mais je n'ai pas comprise."
         }
     ],
-    output_adapter="chatterbot.output.OutputAdapter",
-    database="./database.db"
+    output_adapter="chatterbot.output.OutputAdapter"
 )
 bot.set_trainer(ChatterBotCorpusTrainer)
 bot.train('chatterbot.corpus.french')
@@ -45,7 +44,8 @@ def get_conversation(user_id):
     Return the conversation for the session if one exists.
     Create a new conversation if one does not exist.
     """
-    from bot.models.models import Conversation, Response
+    from chatterbot.conversation import Response
+    Conversation = bot.storage.get_model('conversation')
     connection = MongoClient(DB_URL, DB_PORT)
     db = connection[DB_NAME]
     db.authenticate(DB_USER, DB_PWD)
@@ -65,7 +65,6 @@ def get_conversation(user_id):
         conversation.id =  conversation_['conversation_id']
         print(conversation.id)
     except Exception as ex:
-        print(ex)
         conversation.id = 0
 
     existing_conversation = False
