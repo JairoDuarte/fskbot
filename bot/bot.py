@@ -13,9 +13,6 @@ from credentials import DB_PWD, DB_USER, DB_URL, DB_NAME, DB_PORT
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bot.settings")
 apps.populate(settings.INSTALLED_APPS)
 
-
-
-
 bot = ChatBot(
     "Terminal",
     storage_adapter="chatterbot.storage.SQLStorageAdapter",
@@ -74,7 +71,7 @@ def get_conversation(user_id):
         print('get conversation')
         existing_conversation = True
 
-    except Conversation.DoesNotExist:
+    except Exception:
         data = '{}'
         conversation.id = bot.storage.create_conversation()
         json_conversation = json.loads(data)
