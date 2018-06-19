@@ -56,37 +56,32 @@ def get_conversation(user_id):
 
     conversation = Obj()
 
+
     try:
         conversation_ = coll_conversation.find_one({"user_id": user_id})
         print(conversation_)
         conversation.id =  conversation_['conversation_id']
         print(conversation.id)
-    except Exception as ex:
-        conversation.id = 0
-
-    existing_conversation = False
-    try:
         print('try 2')
         Conversation.objects.get(id=conversation.id)
         print('get conversation')
-        existing_conversation = True
 
-    except Exception:
+        if conversation.id:
+            responses = Response.objects.filter(
+                conversations__id=conversation.id
+            )
+
+            for response in responses:
+                conversation.statements.append(response.statement.serialize())
+                conversation.statements.append(response.response.serialize())
+    except Exception as ex:
         data = '{}'
         conversation.id = bot.storage.create_conversation()
         json_conversation = json.loads(data)
         json_conversation['conversation_id'] = conversation.id
         json_conversation['user_id'] = user_id
         coll_conversation.insert_one(json_conversation)
-
-    if existing_conversation:
-        responses = Response.objects.filter(
-            conversations__id=conversation.id
-        )
-
-        for response in responses:
-            conversation.statements.append(response.statement.serialize())
-            conversation.statements.append(response.response.serialize())
+        print(ex)
 
     connection.close()
     return conversation
