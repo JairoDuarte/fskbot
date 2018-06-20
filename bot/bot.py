@@ -1,17 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
-import os
 
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from pymongo import MongoClient
-from django.apps import apps
-from django.conf import settings
 
 from credentials import DB_PWD, DB_USER, DB_URL, DB_NAME, DB_PORT
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bot.settings")
-apps.populate(settings.INSTALLED_APPS)
 
 bot = ChatBot(
     "Terminal",
@@ -41,8 +35,9 @@ def get_conversation(user_id):
     Return the conversation for the session if one exists.
     Create a new conversation if one does not exist.
     """
-    from chatterbot.conversation import Response
     Conversation = bot.storage.get_model('conversation')
+    Session = bot.storage.Session
+    session = Session()
     connection = MongoClient(DB_URL, DB_PORT)
     db = connection[DB_NAME]
     db.authenticate(DB_USER, DB_PWD)
@@ -56,24 +51,26 @@ def get_conversation(user_id):
 
     conversation = Obj()
 
-
     try:
         conversation_ = coll_conversation.find_one({"user_id": user_id})
         print(conversation_)
         conversation.id =  conversation_['conversation_id']
-        print(conversation.id)
-        print('try 2')
-        Conversation.objects.get(id=conversation.id)
-        print('get conversation')
+        existing_conversation = session.query(Conversation).get(conversation.id)  #Conversation_.query.filter(id=conversation.id)
+        print('id '+str(existing_conversation.id))
 
-        if conversation.id:
-            responses = Response.objects.filter(
-                conversations__id=conversation.id
+        if existing_conversation:
+            Statement = bot.storage.get_model('statement')
+
+            statement_query = session.query(
+                Statement
+            ).filter(
+                Statement.conversations.any(id=conversation.id)
             )
 
-            for response in responses:
-                conversation.statements.append(response.statement.serialize())
-                conversation.statements.append(response.response.serialize())
+            for statement in statement_query:
+                print(statement.get_statement())
+                conversation.statements.append(statement.get_statement())
+
     except Exception as ex:
         data = '{}'
         conversation.id = bot.storage.create_conversation()
@@ -83,5 +80,6 @@ def get_conversation(user_id):
         coll_conversation.insert_one(json_conversation)
         print(ex)
 
+    session.close()
     connection.close()
     return conversation
