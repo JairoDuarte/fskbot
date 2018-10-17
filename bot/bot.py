@@ -20,7 +20,7 @@ bot = ChatBot(
         {
             'import_path': 'chatterbot.logic.LowConfidenceAdapter',
             'threshold': 0.65,
-            'default_response': 'I am sorry, but I do not understand.'
+            'default_response': 'Je suis désolé, mais je n'ai pas comprise'
         }
     ],
     output_adapter="chatterbot.output.OutputAdapter",
