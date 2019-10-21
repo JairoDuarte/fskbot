@@ -21,7 +21,7 @@ Jinja2==2.10
 MarkupSafe==1.0
 mathparse==0.1.1
 mock==2.0.0
-nltk==3.3
+nltk==3.4.5
 oauthlib==2.1.0
 pbr==4.0.4
 protobuf==3.5.2.post1
