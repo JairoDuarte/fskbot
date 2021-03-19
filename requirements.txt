@@ -17,7 +17,7 @@ googleapis-common-protos==1.5.3
 grpcio==1.12.1
 idna==2.6
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 MarkupSafe==1.0
 mathparse==0.1.1
 mock==2.0.0
